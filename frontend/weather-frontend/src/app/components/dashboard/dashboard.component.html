@@ -1,0 +1,61 @@
+<div class="min-h-screen bg-blue-100 flex flex-col items-center justify-start py-10">
+  <!-- Header -->
+  <h1 class="text-4xl font-bold text-blue-800 mb-6 flex items-center gap-2">
+    <span>🌤️</span> Weather Dashboard
+  </h1>
+
+  <!-- Search Box -->
+  <div class="flex items-center gap-3 mb-8">
+    <input
+      [(ngModel)]="city"
+      placeholder="Enter city name..."
+      class="px-4 py-2 border border-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-60"
+    />
+    <button
+      (click)="getWeatherData()"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
+    >
+      Search
+    </button>
+  </div>
+
+  <!-- Temperature Unit Toggle -->
+  <div class="flex gap-4 mb-8">
+    <button
+      (click)="setUnit('C')"
+      [class.bg-blue-600]="unit === 'C'"
+      [class.text-white]="unit === 'C'"
+      class="border border-blue-600 px-5 py-2 rounded-lg text-blue-600 font-semibold hover:bg-blue-700 hover:text-white transition"
+    >
+      °C
+    </button>
+    <button
+      (click)="setUnit('F')"
+      [class.bg-blue-600]="unit === 'F'"
+      [class.text-white]="unit === 'F'"
+      class="border border-blue-600 px-5 py-2 rounded-lg text-blue-600 font-semibold hover:bg-blue-700 hover:text-white transition"
+    >
+      °F
+    </button>
+  </div>
+
+  <!-- Weather Card -->
+  <div *ngIf="weatherData" class="bg-white rounded-2xl p-6 shadow-lg w-96 text-center mb-10">
+    <h2 class="text-2xl font-bold text-blue-800 mb-2">{{ weatherData.location.name }}</h2>
+    <p class="text-gray-600 mb-3">{{ weatherData.location.region }}, {{ weatherData.location.country }}</p>
+    <img [src]="weatherData.current.condition.icon" alt="Weather Icon" class="mx-auto mb-2 w-20 h-20">
+    <h3 class="text-3xl font-bold text-blue-700">
+      {{ displayTemp(weatherData.current.temp_c, weatherData.current.temp_f) }}
+    </h3>
+    <p class="text-gray-600">{{ weatherData.current.condition.text }}</p>
+    <p class="mt-2 text-gray-700">💧 Humidity: {{ weatherData.current.humidity }}%</p>
+  </div>
+
+  <!-- Chart -->
+  <div class="bg-white rounded-2xl p-6 shadow-lg w-[500px]">
+    <h2 class="text-xl font-semibold text-blue-800 mb-4 flex items-center gap-2">
+      🌡️ Weekly Temperature Trends
+    </h2>
+    <canvas baseChart [data]="chartData" [options]="chartOptions" [type]="'bar'"></canvas>
+  </div>
+</div>
