@@ -10,6 +10,7 @@ export class DashboardComponent implements OnInit {
   city: string = 'Hyderabad';
   weatherData: any;
   unit: 'C' | 'F' = 'C';
+  weatherIcon: string = '';
 
   chartData: any;
   chartOptions: any;
@@ -22,9 +23,15 @@ export class DashboardComponent implements OnInit {
 
   getWeatherData() {
     if (!this.city) return;
+
     this.ws.getWeather(this.city).subscribe({
       next: (data) => {
         this.weatherData = data;
+
+        // ✅ Fix: WeatherAPI icon URL already contains a valid path
+        this.weatherIcon = `https:${data.current.condition.icon}`;
+
+        // ✅ Update the chart after loading data
         this.updateChart();
       },
       error: (err) => console.error('Error fetching data:', err)
@@ -33,6 +40,7 @@ export class DashboardComponent implements OnInit {
 
   setUnit(unit: 'C' | 'F') {
     this.unit = unit;
+    this.updateChart(); // update chart units dynamically
   }
 
   displayTemp(tempC: number, tempF: number): string {
@@ -40,21 +48,33 @@ export class DashboardComponent implements OnInit {
   }
 
   updateChart() {
-    const temps = [28, 30, 26, 32, 29, 30, 31];
-    this.chartData = {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
+  if (!this.weatherData?.forecast?.forecastday) return;
+
+  const labels = this.weatherData.forecast.forecastday.map((d: any) => d.date);
+  const temps = this.weatherData.forecast.forecastday.map((d: any) =>
+    this.unit === 'C' ? d.day.avgtemp_c : d.day.avgtemp_f
+  );
+
+  this.chartData = {
+    labels,
+    datasets: [
+      {
         label: `Temperature (°${this.unit})`,
         data: temps,
         backgroundColor: 'rgba(37, 99, 235, 0.4)',
         borderColor: 'rgba(37, 99, 235, 1)',
-        borderWidth: 1
-      }]
-    };
+        borderWidth: 2,
+        borderRadius: 6,
+      },
+    ],
+  };
 
-    this.chartOptions = {
-      responsive: true,
-      scales: { y: { beginAtZero: true } }
-    };
-  }
+  this.chartOptions = {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
 }
+}
+
