@@ -1,0 +1,22 @@
+# Node modules and logs
+node_modules/
+npm-debug.log
+
+# Build output
+dist/
+out/
+build/
+
+# Environment variables
+.env
+backend/.env
+frontend/weather-frontend/.env
+
+# IDE / system files
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
